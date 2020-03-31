@@ -1,16 +1,27 @@
-peso = float(input('Digite seu peso (kg): '))
-altura = float(input('Digite sua altura (m): '))
-imc = peso / (altura * altura)
-Classificacao = str
+import gi
 
-print(f"Seu IMC é {imc:.1f}")
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk
 
-if imc < 18.5:
-    print(f"Classificacao = MAGREZA")
-elif imc <= 24.9:
-    print(f"Classificacao = NORMAL")
-elif imc <= 29.9:
-    print(f"Classificacao = OBESIDADE")
-else:
-    print(f"Classificacao = OBESIDADE GRAVE")
+builder = Gtk.Builder()
+builder.add_from_file('user_interface.glade')
 
+
+class Handler():
+    def __init__(self):
+        self.peso = builder.get_object('peso')
+        self.altura = builder.get_object('altura')
+        self.text_buffer = builder.get_object('textbuffer1')
+
+    def on_button1_clicked(self, button):
+        imc = float(self.peso.get_text()) / (float(self.altura.get_text()) ** 2)
+        self.text_buffer.set_text("Seu IMC é: " + str(round(imc, 2)))
+
+    def on_janela_principal_destroy(self, window):
+        Gtk.main_quit()
+
+
+builder.connect_signals(Handler())
+window = builder.get_object('janela_principal')
+window.show_all()
+Gtk.main()
